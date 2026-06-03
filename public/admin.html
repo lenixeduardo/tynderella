@@ -112,7 +112,7 @@
 
 <!-- Sidebar -->
 <aside class="admin-sidebar">
-  <a class="admin-logo" href="Tynderella Store.html">
+  <a class="admin-logo" href="index.html">
     <span>Tynderella</span>
     <span class="admin-badge" style="font-size:9px; letter-spacing:.1em; text-transform:none;">admin</span>
   </a>
@@ -140,11 +140,11 @@
     </a>
   </nav>
   <div class="sidebar-bottom">
-    <a href="Perfil.html">
+    <a href="perfil.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       Meu Perfil
     </a>
-    <a href="Tynderella Store.html">
+    <a href="index.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/></svg>
       Ver Loja
     </a>
@@ -278,41 +278,92 @@
 <!-- Toast -->
 <div class="toast" id="toast"><div class="ti">✓</div><span id="toast-msg">Produto salvo!</span></div>
 
+<!-- Supabase Client JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-var products = [
-  {id:1,name:'Bong Straight Crystal',cat:'bong',price:'R$ 189,90',stock:12,status:'ativo',img:'assets/produto-bong-cylinder.jpeg'},
-  {id:2,name:'Sapatinho Crystal Bong',cat:'bong',price:'R$ 249,90',stock:6,status:'destaque',img:'assets/produto-bong-heel.jpeg'},
-  {id:3,name:'Bong Maçã Encantada',cat:'bong',price:'R$ 169,90',stock:8,status:'ativo',img:'assets/produto-bong-apple.jpeg'},
-  {id:4,name:'Bong Sapphire Tower',cat:'bong',price:'R$ 219,90',stock:5,status:'ativo',img:'assets/produto-bong-blue.png'},
-  {id:5,name:'Bowl Cobra Azul',cat:'bowl',price:'R$ 49,90',stock:22,status:'ativo',img:'assets/produto-bowl-blue.png'},
-  {id:6,name:'Maçarico Slim Trio',cat:'macarico',price:'R$ 59,90',stock:15,status:'ativo',img:'assets/produto-torch-slim.png'},
-  {id:7,name:'Maçarico Titanium Pro',cat:'macarico',price:'R$ 89,90',stock:9,status:'destaque',img:'assets/produto-torch-silver.png'},
-  {id:8,name:'Bowl Caveira Crystal Blue',cat:'bowl',price:'R$ 54,90',stock:17,status:'ativo',img:'assets/produto-bowl-skull.png'}
-];
+var products = [];
 var editId = null;
+var supabaseClient = null;
+
+// Initialize Supabase Client
+fetch('/api/config')
+  .then(function(res) { return res.json(); })
+  .then(async function(config) {
+    if (config.supabaseUrl && config.supabaseAnonKey) {
+      supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+      
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      
+      if (!session) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Check if user is admin
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (!profile || profile.role !== 'admin') {
+        alert('Acesso negado: Somente administradores podem acessar esta página.');
+        window.location.href = 'perfil.html';
+        return;
+      }
+
+      // Load products
+      loadProducts();
+    } else {
+      window.location.href = 'login.html';
+    }
+  });
+
+function loadProducts() {
+  fetch('/api/products')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (Array.isArray(data)) {
+        // Map database schema to frontend expected schema
+        products = data.map(function(p) {
+          return {
+            id: p.id,
+            name: p.name,
+            cat: p.category,
+            price: 'R$ ' + parseFloat(p.price).toFixed(2).replace('.', ','),
+            stock: p.stock,
+            status: p.stock > 0 ? 'ativo' : 'inativo',
+            desc: p.description,
+            img: p.image_url || 'assets/produto-bong-cylinder.jpeg'
+          };
+        });
+        renderTable();
+      }
+    })
+    .catch(function(err) { console.error('Erro ao carregar produtos:', err); });
+}
 
 function renderTable(data){
   var tbody = document.getElementById('table-body');
-  if(!data) data = products;
-  tbody.innerHTML = data.map(function(p){
+  var displayData = data || products;
+  tbody.innerHTML = displayData.map(function(p){
     var statusClass = p.status === 'ativo' ? 'ativo' : p.status === 'destaque' ? 'destaque' : 'inativo';
     var statusLabel = p.status === 'ativo' ? 'Ativo' : p.status === 'destaque' ? 'Destaque' : 'Inativo';
     var catLabel = {bong:'Bong',macarico:'Maçarico',bowl:'Bowl',acessorio:'Acessório'}[p.cat]||p.cat;
     return '<tr>'+
-      '<td><div class="prod-cell"><img class="prod-thumb" src="'+p.img+'" alt="'+p.name+'"><div><div class="prod-name">'+p.name+'</div><div class="prod-cat">#'+p.id+'</div></div></div></td>'+
+      '<td><div class="prod-cell"><img class="prod-thumb" src="'+p.img+'" alt="'+p.name+'"><div><div class="prod-name">'+p.name+'</div><div class="prod-cat" style="font-size: 10px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">'+p.id+'</div></div></div></td>'+
       '<td>'+catLabel+'</td>'+
       '<td class="price-val">'+p.price+'</td>'+
       '<td>'+p.stock+' un.</td>'+
       '<td><span class="badge '+statusClass+'">'+statusLabel+'</span></td>'+
       '<td><div class="row-actions">'+
-        '<button class="btn-action" onclick="editProduct('+p.id+')">Editar</button>'+
-        '<button class="btn-action danger" onclick="deleteProduct('+p.id+')">Excluir</button>'+
+        `<button class="btn-action" onclick="editProduct('${p.id}')">Editar</button>`+
+        `<button class="btn-action danger" onclick="deleteProduct('${p.id}')">Excluir</button>`+
       '</div></td>'+
     '</tr>';
   }).join('');
-  document.getElementById('stat-produtos').textContent = products.filter(function(p){ return p.status !== 'inativo'; }).length;
+  document.getElementById('stat-produtos').textContent = products.filter(function(p){ return p.stock > 0; }).length;
 }
-renderTable();
 
 function filterTable(q){
   var filtered = products.filter(function(p){ return p.name.toLowerCase().includes(q.toLowerCase())||p.cat.includes(q.toLowerCase()); });
@@ -320,48 +371,84 @@ function filterTable(q){
 }
 
 function openModal(){ editId = null; document.getElementById('modal-title').textContent='Novo Produto'; document.getElementById('modal').classList.add('open'); }
-function closeModal(){ document.getElementById('modal').classList.remove('open'); document.querySelector('form').reset(); document.getElementById('img-preview').style.display='none'; editId=null; }
+defclose = function(){ document.getElementById('modal').classList.remove('open'); document.querySelector('form').reset(); document.getElementById('img-preview').style.display='none'; editId=null; }
+window.closeModal = defclose;
 
-function editProduct(id){
+window.editProduct = function(id){
   var p = products.find(function(x){ return x.id===id; });
   if(!p) return;
   editId = id;
   document.getElementById('modal-title').textContent = 'Editar Produto';
   document.getElementById('f-name').value = p.name;
-  document.getElementById('f-price').value = p.price.replace('R$ ','');
+  document.getElementById('f-price').value = p.price.replace('R$ ','').replace(',', '.');
   document.getElementById('f-cat').value = p.cat;
   document.getElementById('f-stock').value = p.stock;
-  document.getElementById('f-status').value = p.status;
   document.getElementById('f-desc').value = p.desc||'';
   document.getElementById('modal').classList.add('open');
 }
 
-function deleteProduct(id){
+window.deleteProduct = async function(id){
   if(!confirm('Excluir este produto?')) return;
-  products = products.filter(function(p){ return p.id!==id; });
-  renderTable();
-  showToast('Produto excluído');
+  if (!supabaseClient) return;
+  
+  const { error } = await supabaseClient
+    .from('products')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    alert('Erro ao excluir produto: ' + error.message);
+  } else {
+    showToast('Produto excluído');
+    loadProducts();
+  }
 }
 
-function saveProduct(e){
+window.saveProduct = async function(e){
   e.preventDefault();
+  if (!supabaseClient) return;
+
   var name = document.getElementById('f-name').value;
-  var price = 'R$ '+document.getElementById('f-price').value;
+  var price = parseFloat(document.getElementById('f-price').value);
   var cat = document.getElementById('f-cat').value;
   var stock = parseInt(document.getElementById('f-stock').value)||0;
-  var status = document.getElementById('f-status').value;
   var desc = document.getElementById('f-desc').value;
+
+  var productData = {
+    name: name,
+    price: price,
+    category: cat,
+    stock: stock,
+    description: desc,
+    image_url: 'assets/produto-bong-cylinder.jpeg' // Padrão
+  };
+
   if(editId){
-    var p = products.find(function(x){ return x.id===editId; });
-    if(p){ p.name=name;p.price=price;p.cat=cat;p.stock=stock;p.status=status;p.desc=desc; }
-    showToast('Produto atualizado!');
+    const { error } = await supabaseClient
+      .from('products')
+      .update(productData)
+      .eq('id', editId);
+
+    if (error) {
+      alert('Erro ao salvar: ' + error.message);
+    } else {
+      showToast('Produto atualizado!');
+      loadProducts();
+      closeModal();
+    }
   } else {
-    var newId = Math.max.apply(null, products.map(function(x){return x.id;}))+1;
-    products.push({id:newId,name:name,cat:cat,price:price,stock:stock,status:status,desc:desc,img:'assets/produto-bong-cylinder.jpeg'});
-    showToast('Produto criado!');
+    const { error } = await supabaseClient
+      .from('products')
+      .insert(productData);
+
+    if (error) {
+      alert('Erro ao criar: ' + error.message);
+    } else {
+      showToast('Produto criado!');
+      loadProducts();
+      closeModal();
+    }
   }
-  renderTable();
-  closeModal();
 }
 
 function previewImg(input){

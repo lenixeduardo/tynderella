@@ -265,14 +265,61 @@
   <p>© 2026 Tynderella Store · Made with 🩷 for princesses</p>
 </footer>
 
+<!-- Supabase Client JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
   var hdr = document.getElementById('hdr');
   window.addEventListener('scroll',function(){ hdr.classList.toggle('scrolled',scrollY>40); },{passive:true});
-  var user = JSON.parse(localStorage.getItem('ty-user')||'{}');
-  if(user.name){ document.getElementById('display-name').textContent = user.name; document.getElementById('avatar-letter').textContent = user.name.charAt(0).toUpperCase(); }
-  if(user.email){ document.getElementById('display-email').textContent = user.email; }
+
+  var supabaseClient = null;
+
+  // Initialize Supabase and check active session
+  fetch('/api/config')
+    .then(function(res) { return res.json(); })
+    .then(async function(config) {
+      if (config.supabaseUrl && config.supabaseAnonKey) {
+        supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+        window.supabaseClient = supabaseClient;
+        
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        if (!session) {
+          // If no supabase session, redirect to login
+          localStorage.removeItem('ty-user');
+          window.location.href = 'login.html';
+          return;
+        }
+
+        // Get user details
+        var user = session.user;
+        var name = user.user_metadata?.full_name || user.email.split('@')[0];
+        var email = user.email;
+
+        // Sync with localStorage so existing static logic continues to work
+        localStorage.setItem('ty-user', JSON.stringify({ name: name, email: email }));
+
+        // Update DOM
+        document.getElementById('display-name').textContent = name;
+        document.getElementById('display-email').textContent = email;
+        document.getElementById('avatar-letter').textContent = name.charAt(0).toUpperCase();
+
+        // Listen for auth state updates
+        supabaseClient.auth.onAuthStateChange(function(event, currentSession) {
+          if (event === 'SIGNED_OUT') {
+            localStorage.removeItem('ty-user');
+            window.location.href = 'login.html';
+          }
+        });
+      } else {
+        // Fallback to local storage if config not loaded yet
+        var localUser = JSON.parse(localStorage.getItem('ty-user')||'{}');
+        if(!localUser.email){ window.location.href = 'login.html'; }
+      }
+    });
+
 })();
+
 window.copyCode = function(id, btn){
   var code = document.getElementById(id).textContent;
   navigator.clipboard.writeText(code).catch(function(){});
@@ -280,7 +327,16 @@ window.copyCode = function(id, btn){
   btn.style.background = 'var(--gold)';
   setTimeout(function(){ btn.textContent = 'Copiar'; btn.style.background = ''; },1800);
 };
-window.logout = function(){ localStorage.removeItem('ty-user'); window.location.href = 'login.html'; };
+
+window.logout = async function(){
+  localStorage.removeItem('ty-user');
+  if (window.supabaseClient) {
+    await window.supabaseClient.auth.signOut();
+  } else {
+    // If not loaded/fallback
+    window.location.href = 'login.html';
+  }
+};
 </script>
 </body>
 </html>

@@ -303,29 +303,6 @@
     }
   }
 
-  /* Card animations */
-  if ('IntersectionObserver' in window){
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, {threshold:.15});
-    document.querySelectorAll('.card').forEach(function(c,i){ c.style.transitionDelay=(i*.07)+'s'; io.observe(c); });
-  } else { document.querySelectorAll('.card').forEach(function(c){ c.classList.add('in'); }); }
-
-  /* Filter */
-  var filterBtns = document.querySelectorAll('.filter-btn');
-  var cards = document.querySelectorAll('.card');
-  filterBtns.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      filterBtns.forEach(function(b){ b.classList.remove('active'); });
-      btn.classList.add('active');
-      var f = btn.dataset.filter;
-      cards.forEach(function(c){
-        if(f === 'all' || c.dataset.category === f){ c.removeAttribute('data-hidden'); }
-        else { c.setAttribute('data-hidden', '1'); }
-      });
-    });
-  });
-
   /* Cart */
   var cart = JSON.parse(localStorage.getItem('ty-cart') || '[]');
   function updateBadge(){ var badge = document.querySelector('.cart-badge .count'); if(badge) badge.textContent = cart.reduce(function(a,i){ return a+i.qty; }, 0); }
@@ -340,6 +317,70 @@
     btn.style.background = '#EBD687';
     setTimeout(function(){ btn.textContent = '+ Carrinho'; btn.style.background = ''; }, 1500);
   };
+
+  /* Load Products dynamically from Backend API */
+  var grid = document.getElementById('grid');
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  var productsData = [];
+
+  function renderProducts(filterCategory) {
+    grid.innerHTML = '';
+    var filtered = productsData.filter(function(p) {
+      return filterCategory === 'all' || p.category === filterCategory;
+    });
+
+    filtered.forEach(function(p, i) {
+      var card = document.createElement('article');
+      card.className = 'card';
+      card.dataset.category = p.category;
+      card.style.transitionDelay = (i * 0.05) + 's';
+
+      var badgeHtml = p.stock <= 3 && p.stock > 0 
+        ? '<span class="ess-badge" style="background:#EBD687;">POUCAS UNIDADES</span>' 
+        : (p.stock === 0 ? '<span class="ess-badge" style="background:#555;color:#fff;">ESGOTADO</span>' : '');
+
+      card.innerHTML = `
+        ${badgeHtml}
+        <div class="card-media">
+          <svg class="badge-crown" width="26" height="20" viewBox="0 0 40 30" fill="none" stroke="var(--pink)" stroke-width="2.4" stroke-linejoin="round"><path d="M3 26 L7 7 L14 18 L20 3 L26 18 L33 7 L37 26 Z"/></svg>
+          <img src="${p.image_url}" alt="${p.name}">
+        </div>
+        <h3>${p.name}</h3>
+        <p class="price">R$ ${parseFloat(p.price).toFixed(2).replace('.', ',')}</p>
+        <p>${p.description || ''}</p>
+        <div class="card-actions">
+          <button class="btn-add" ${p.stock === 0 ? 'disabled style="background:#555;cursor:not-allowed;"' : ''} onclick="addToCart('${p.name}','R$ ${parseFloat(p.price).toFixed(2).replace('.', ',')}','${p.image_url}')">
+            ${p.stock === 0 ? 'Esgotado' : '+ Carrinho'}
+          </button>
+          <button class="btn-wish" aria-label="Favoritar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        </div>
+      `;
+
+      grid.appendChild(card);
+      // Trigger animation frame delay
+      setTimeout(function(){ card.classList.add('in'); }, 50);
+    });
+  }
+
+  // Fetch products on page load
+  fetch('/api/products')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (Array.isArray(data)) {
+        productsData = data;
+        renderProducts('all');
+      }
+    })
+    .catch(function(err) { console.error('Erro ao buscar produtos:', err); });
+
+  /* Filter Handler */
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      renderProducts(btn.dataset.filter);
+    });
+  });
 })();
 </script>
 </body>

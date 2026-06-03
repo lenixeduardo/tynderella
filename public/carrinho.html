@@ -123,12 +123,12 @@
 <body>
 
 <header class="site-header" id="hdr">
-  <a class="brand" href="Tynderella Store.html">
-    <img src="assets/logo-transparent.png" alt="Tynderella" style="height:110px;width:auto;">
+  <a class="brand" href="index.html">
+    <img src="assets/logo-transparent.png" alt="Tynderella" style="height:110px;width:auto;mix-blend-mode:screen;">
   </a>
   <nav>
-    <a href="Tynderella Store.html">Home</a>
-    <a href="Produtos.html">Produtos</a>
+    <a href="index.html">Home</a>
+    <a href="produtos.html">Produtos</a>
     <a href="#">Coleções</a>
     <a href="#">Lookbook</a>
     <a href="#">Sobre</a>
@@ -137,14 +137,14 @@
     <button class="ic search" aria-label="Buscar">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
     </button>
-    <a href="Carrinho.html" class="ic cart cart-badge" aria-label="Carrinho" style="text-decoration:none;">
+    <a href="carrinho.html" class="ic cart cart-badge" aria-label="Carrinho" style="text-decoration:none;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h2l2.4 12.4a1 1 0 0 0 1 .8h8.7a1 1 0 0 0 1-.8L21 8H6"/><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/></svg>
       <span class="count">0</span>
     </a>
-    <button class="btn-enter">
+    <a href="login.html" class="btn-enter" style="text-decoration:none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
       <span>ENTRAR</span>
-    </button>
+    </a>
   </div>
 </header>
 
@@ -242,6 +242,18 @@
   /* Header scroll */
   var hdr = document.getElementById('hdr');
   window.addEventListener('scroll', function(){ hdr.classList.toggle('scrolled', scrollY > 40); }, {passive:true});
+
+  /* Check user auth */
+  var user = JSON.parse(localStorage.getItem('ty-user')||'{}');
+  var loginBtn = document.querySelector('.btn-enter');
+  if(loginBtn) {
+    if(user.name) {
+      loginBtn.href = 'perfil.html';
+      loginBtn.querySelector('span').textContent = 'PERFIL';
+    } else {
+      loginBtn.href = 'login.html';
+    }
+  }
 
   /* Cart state */
   var cart = JSON.parse(localStorage.getItem('ty-cart') || '[]');
@@ -341,9 +353,43 @@
     btn.textContent = '✓ Processando...';
     btn.style.background = 'var(--gold)';
     btn.disabled = true;
-    setTimeout(function(){
-      window.location.href = 'Compra Confirmada.html';
-    }, 1200);
+
+    var user = JSON.parse(localStorage.getItem('ty-user') || '{}');
+    var subtotal = cart.reduce(function(a,i){ return a + parsePrice(i.price)*i.qty; },0);
+    var discount = window._discount || 0;
+    var shipping = subtotal > 0 ? (subtotal >= 200 ? 0 : 18.90) : 0;
+    var total = subtotal - discount + shipping;
+
+    fetch('/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user_email: user.email || null,
+        items: cart,
+        total: total
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        localStorage.removeItem('ty-cart');
+        window.location.href = 'compra-confirmada.html';
+      } else {
+        alert('Erro ao processar pedido: ' + (data.error || 'Erro desconhecido'));
+        btn.textContent = 'FINALIZAR COMPRA';
+        btn.style.background = '';
+        btn.disabled = false;
+      }
+    })
+    .catch(function(err) {
+      console.error(err);
+      alert('Erro de conexão ao processar compra.');
+      btn.textContent = 'FINALIZAR COMPRA';
+      btn.style.background = '';
+      btn.disabled = false;
+    });
   };
 
   render();
