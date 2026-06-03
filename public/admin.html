@@ -289,6 +289,16 @@ var supabaseClient = null;
 fetch('/api/config')
   .then(function(res) { return res.json(); })
   .then(async function(config) {
+    // Bypass para teste local do sistema
+    var localUser = JSON.parse(localStorage.getItem('ty-user') || '{}');
+    if (localUser.email === 'admin@admin.com') {
+      if (config.supabaseUrl && config.supabaseAnonKey) {
+        supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+      }
+      loadProducts();
+      return;
+    }
+
     if (config.supabaseUrl && config.supabaseAnonKey) {
       supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
       

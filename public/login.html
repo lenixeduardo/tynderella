@@ -190,6 +190,21 @@ function switchTab(tab){
 
 async function handleSubmit(e){
   e.preventDefault();
+
+  var email = document.getElementById('email').value;
+  var password = document.getElementById('password').value;
+
+  // Bypass para teste local do sistema
+  if (currentTab === 'login' && email === 'admin@admin.com' && password === 'admin') {
+    var user = {
+      name: 'Admin Teste',
+      email: 'admin@admin.com'
+    };
+    localStorage.setItem('ty-user', JSON.stringify(user));
+    window.location.href = 'perfil.html';
+    return;
+  }
+
   if (!supabaseClient) {
     alert('Erro: Conexão com Supabase não inicializada.');
     return;
@@ -198,9 +213,6 @@ async function handleSubmit(e){
   var btn = document.getElementById('submit-btn');
   btn.textContent = currentTab === 'login' ? 'Entrando...' : 'Criando conta...';
   btn.style.opacity = '.7';
-
-  var email = document.getElementById('email').value;
-  var password = document.getElementById('password').value;
 
   if (currentTab === 'login') {
     const { data, error } = await supabaseClient.auth.signInWithPassword({
