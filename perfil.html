@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Perfil — Tynderella Store</title>
+<link rel="icon" type="image/png" href="assets/logo-sapatinho-transparent.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0B0B0F;--ink-2:#1A1A1F;--ink-3:#2A2A2F;--pink:#F286C6;--pink-soft:#F5A8D8;--gold:#EBD687;--silver:#C0C0C6;--cream:#F5F5F5;--ui:'Outfit',system-ui,sans-serif;--serif:'Playfair Display',serif;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--ink);color:var(--cream);font-family:var(--ui);-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 48px;}
+
+  /* Header */
+  .site-header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:20px 48px;transition:background .3s,border-color .3s,padding .3s;border-bottom:1px solid transparent;}
+  .site-header.scrolled{background:rgba(10,7,8,.88);backdrop-filter:blur(16px);border-bottom-color:rgba(242,134,198,.16);padding:13px 48px;}
+  .brand{display:flex;align-items:center;text-decoration:none;}
+  nav{display:flex;gap:34px;flex:1;justify-content:center;}
+  nav a{color:rgba(250,245,243,.72);text-decoration:none;font-size:15px;transition:color .2s;}
+  nav a:hover{color:var(--pink);}
+  .actions{display:flex;align-items:center;gap:20px;}
+  .ic{background:none;border:none;cursor:pointer;display:flex;transition:transform .2s;color:rgba(250,245,243,.6);}
+  .ic.cart{color:var(--pink);}
+  .ic:hover{transform:scale(1.1);}
+  .btn-enter{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--pink);border-radius:999px;padding:7px 18px;font-family:var(--ui);font-weight:600;font-size:13px;color:var(--pink);background:transparent;cursor:pointer;transition:background .2s;}
+  .btn-enter:hover{background:rgba(242,134,198,.12);}
+
+  /* Page */
+  .page-wrap{padding:120px 0 80px;}
+  .profile-layout{display:grid;grid-template-columns:280px 1fr;gap:32px;align-items:start;}
+
+  /* Sidebar */
+  .sidebar{background:var(--ink-2);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:32px 24px;position:sticky;top:110px;}
+  .avatar-wrap{text-align:center;margin-bottom:24px;}
+  .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--ink-3));border:2px solid rgba(242,134,198,.4);display:flex;align-items:center;justify-content:center;font-family:'Great Vibes',cursive;font-size:36px;color:var(--cream);margin:0 auto 12px;}
+  .user-name{font-family:var(--serif);font-size:18px;font-weight:700;margin-bottom:4px;}
+  .user-email{font-size:13px;color:rgba(245,245,245,.45);}
+  .member-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(235,214,135,.4);border-radius:999px;padding:5px 12px;margin-top:10px;}
+  .sidebar-nav{display:flex;flex-direction:column;gap:4px;margin-top:24px;border-top:1px solid rgba(255,255,255,.07);padding-top:20px;}
+  .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;text-decoration:none;font-size:14px;color:rgba(245,245,245,.6);transition:all .2s;}
+  .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(242,134,198,.1);color:var(--pink);}
+  .sidebar-nav a.active{font-weight:600;}
+  .btn-logout{width:100%;margin-top:24px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:10px;font-family:var(--ui);font-size:13px;color:rgba(245,245,245,.45);cursor:pointer;transition:all .2s;}
+  .btn-logout:hover{border-color:rgba(242,134,198,.4);color:var(--pink);}
+
+  /* Main Content */
+  .main-content h2{font-family:var(--serif);font-size:26px;font-weight:700;margin-bottom:6px;}
+  .main-content .section-sub{font-size:14px;color:rgba(245,245,245,.45);margin-bottom:28px;}
+
+  /* Orders */
+  .order-card{background:var(--ink-2);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:24px;margin-bottom:16px;transition:border-color .2s;}
+  .order-card:hover{border-color:rgba(242,134,198,.25);}
+  .order-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+  .order-num{font-size:13px;font-weight:700;color:var(--cream);letter-spacing:.04em;}
+  .order-date{font-size:12px;color:rgba(245,245,245,.4);margin-top:3px;}
+  .status-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.08em;border-radius:999px;padding:5px 14px;}
+  .status-pill.entregue{background:rgba(70,200,120,.15);color:#46c878;border:1px solid rgba(70,200,120,.3);}
+  .status-pill.transito{background:rgba(235,214,135,.12);color:var(--gold);border:1px solid rgba(235,214,135,.3);}
+  .status-pill.processando{background:rgba(242,134,198,.12);color:var(--pink);border:1px solid rgba(242,134,198,.3);}
+  .status-pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .order-items{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+  .order-item-img{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid rgba(255,255,255,.08);}
+  .order-item-more{width:56px;height:56px;border-radius:10px;background:var(--ink-3);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(245,245,245,.5);}
+  .order-footer{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);flex-wrap:wrap;gap:12px;}
+  .order-total{font-size:14px;color:rgba(245,245,245,.5);}
+  .order-total strong{color:var(--pink);font-size:16px;}
+  .tracking-wrap{background:rgba(242,134,198,.06);border:1px solid rgba(242,134,198,.2);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .tracking-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,245,245,.4);margin-bottom:4px;}
+  .tracking-code{font-size:15px;font-weight:700;letter-spacing:.08em;color:var(--cream);font-family:monospace;}
+  .btn-copy{background:var(--pink);color:#0a0708;border:none;border-radius:999px;padding:8px 18px;font-family:var(--ui);font-size:12px;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:background .2s,transform .2s;white-space:nowrap;}
+  .btn-copy:hover{background:var(--pink-soft);transform:scale(1.03);}
+  .order-actions{display:flex;gap:10px;}
+  .btn-details{background:transparent;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 18px;font-family:var(--ui);font-size:12px;font-weight:600;color:rgba(245,245,245,.6);cursor:pointer;transition:all .2s;}
+  .btn-details:hover{border-color:var(--pink);color:var(--pink);}
+
+  /* Stats */
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
+  .stat-card{background:var(--ink-2);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;text-align:center;}
+  .stat-val{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--pink);margin-bottom:4px;}
+  .stat-label{font-size:12px;color:rgba(245,245,245,.45);letter-spacing:.06em;}
+
+  /* Footer minimal */
+  .site-footer{background:#000;padding:32px 0;border-top:1px solid rgba(242,134,198,.1);text-align:center;}
+  .site-footer p{font-size:12.5px;color:rgba(250,245,243,.28);}
+
+  @media(max-width:900px){.profile-layout{grid-template-columns:1fr;}.sidebar{position:static;}.stats-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.wrap{padding:0 20px;}.stats-grid{grid-template-columns:1fr;}.order-header{flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<header class="site-header" id="hdr">
+  <a class="brand" href="index.html">
+    <img src="assets/logo-transparent.png" alt="Tynderella" style="height:110px;width:auto;mix-blend-mode:screen;">
+  </a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="produtos.html">Produtos</a>
+    <a href="#">Coleções</a>
+  </nav>
+  <div class="actions">
+    <a href="carrinho.html" class="ic cart" style="text-decoration:none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h2l2.4 12.4a1 1 0 0 0 1 .8h8.7a1 1 0 0 0 1-.8L21 8H6"/><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/></svg>
+    </a>
+    <button class="btn-enter" onclick="logout()">SAIR</button>
+  </div>
+</header>
+
+<div class="page-wrap">
+  <div class="wrap">
+    <div class="profile-layout">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="avatar-wrap">
+          <div class="avatar" id="avatar-letter">P</div>
+          <div class="user-name" id="display-name">Princesa</div>
+          <div class="user-email" id="display-email">princesa@tynderella.com</div>
+          <div class="member-badge">
+            <svg width="10" height="10" viewBox="0 0 40 30" fill="currentColor"><path d="M3 26 L7 7 L14 18 L20 3 L26 18 L33 7 L37 26 Z"/></svg>
+            Membro Royal
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="perfil.html" class="active">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Meu Perfil
+          </a>
+          <a href="perfil.html">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            Meus Pedidos
+          </a>
+          <a href="produtos.html">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Favoritos
+          </a>
+          <a href="#">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Endereços
+          </a>
+          <a href="admin.html">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Admin
+          </a>
+        </nav>
+        <button class="btn-logout" onclick="logout()">← Sair da conta</button>
+      </aside>
+
+      <!-- Main -->
+      <main class="main-content">
+        <h2>Meus Pedidos</h2>
+        <p class="section-sub">Acompanhe seus pedidos e rastreie suas encomendas</p>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-val">3</div>
+            <div class="stat-label">Pedidos realizados</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">R$659</div>
+            <div class="stat-label">Total investido</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">2</div>
+            <div class="stat-label">Itens favoritos</div>
+          </div>
+        </div>
+
+        <!-- Order 1 -->
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <div class="order-num">#TYN-2026-0042</div>
+              <div class="order-date">03 de junho de 2026 · 14:37</div>
+            </div>
+            <span class="status-pill entregue"><span class="dot"></span> Entregue</span>
+          </div>
+          <div class="order-items">
+            <img class="order-item-img" src="assets/produto-bong-heel.jpeg" alt="Sapatinho Crystal Bong">
+            <img class="order-item-img" src="assets/produto-torch-slim.png" alt="Maçarico Slim Trio">
+          </div>
+          <div class="tracking-wrap">
+            <div>
+              <div class="tracking-label">Código de rastreio</div>
+              <div class="tracking-code" id="track-1">BR123456789BR</div>
+            </div>
+            <button class="btn-copy" onclick="copyCode('track-1', this)">Copiar</button>
+          </div>
+          <div class="order-footer">
+            <span class="order-total">2 itens · Total: <strong>R$ 309,80</strong></span>
+            <div class="order-actions">
+              <button class="btn-details">Ver detalhes</button>
+              <button class="btn-details">Rastrear</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order 2 -->
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <div class="order-num">#TYN-2026-0038</div>
+              <div class="order-date">28 de maio de 2026 · 09:12</div>
+            </div>
+            <span class="status-pill transito"><span class="dot"></span> Em trânsito</span>
+          </div>
+          <div class="order-items">
+            <img class="order-item-img" src="assets/produto-bong-apple.jpeg" alt="Bong Maçã Encantada">
+            <img class="order-item-img" src="assets/produto-bowl-skull.png" alt="Bowl Caveira">
+            <img class="order-item-img" src="assets/produto-torch-silver.png" alt="Maçarico Titanium">
+          </div>
+          <div class="tracking-wrap">
+            <div>
+              <div class="tracking-label">Código de rastreio</div>
+              <div class="tracking-code" id="track-2">BR987654321BR</div>
+            </div>
+            <button class="btn-copy" onclick="copyCode('track-2', this)">Copiar</button>
+          </div>
+          <div class="order-footer">
+            <span class="order-total">3 itens · Total: <strong>R$ 314,70</strong></span>
+            <div class="order-actions">
+              <button class="btn-details">Ver detalhes</button>
+              <button class="btn-details">Rastrear</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order 3 -->
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <div class="order-num">#TYN-2026-0031</div>
+              <div class="order-date">15 de maio de 2026 · 18:55</div>
+            </div>
+            <span class="status-pill processando"><span class="dot"></span> Processando</span>
+          </div>
+          <div class="order-items">
+            <img class="order-item-img" src="assets/produto-bong-cylinder.jpeg" alt="Bong Straight Crystal">
+          </div>
+          <div class="tracking-wrap" style="opacity:.5;">
+            <div>
+              <div class="tracking-label">Código de rastreio</div>
+              <div class="tracking-code">Disponível após envio</div>
+            </div>
+          </div>
+          <div class="order-footer">
+            <span class="order-total">1 item · Total: <strong>R$ 189,90</strong></span>
+            <div class="order-actions">
+              <button class="btn-details">Ver detalhes</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>© 2026 Tynderella Store · Made with 🩷 for princesses</p>
+</footer>
+
+<script>
+(function(){
+  var hdr = document.getElementById('hdr');
+  window.addEventListener('scroll',function(){ hdr.classList.toggle('scrolled',scrollY>40); },{passive:true});
+  var user = JSON.parse(localStorage.getItem('ty-user')||'{}');
+  if(user.name){ document.getElementById('display-name').textContent = user.name; document.getElementById('avatar-letter').textContent = user.name.charAt(0).toUpperCase(); }
+  if(user.email){ document.getElementById('display-email').textContent = user.email; }
+})();
+window.copyCode = function(id, btn){
+  var code = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(code).catch(function(){});
+  btn.textContent = '✓ Copiado!';
+  btn.style.background = 'var(--gold)';
+  setTimeout(function(){ btn.textContent = 'Copiar'; btn.style.background = ''; },1800);
+};
+window.logout = function(){ localStorage.removeItem('ty-user'); window.location.href = 'login.html'; };
+</script>
+</body>
+</html>

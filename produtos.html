@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produtos — Tynderella Store</title>
+<link rel="icon" type="image/png" href="assets/logo-sapatinho-transparent.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,500;1,600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0B0F;
+    --ink-2:#1A1A1F;
+    --ink-3:#2A2A2F;
+    --pink:#F286C6;
+    --pink-soft:#F5A8D8;
+    --gold:#EBD687;
+    --cream:#F5F5F5;
+    --ui:'Outfit', system-ui, sans-serif;
+    --serif:'Playfair Display', serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--ink);color:var(--cream);font-family:var(--ui);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1300px;margin:0 auto;padding:0 48px;}
+
+  /* ---- Header ---- */
+  .site-header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:20px 48px;transition:background .3s,border-color .3s,padding .3s;border-bottom:1px solid transparent;}
+  .site-header.scrolled{background:rgba(10,7,8,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom-color:rgba(242,134,198,.16);padding:13px 48px;}
+  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;}
+  nav{display:flex;gap:34px;flex:1;justify-content:center;}
+  nav a{color:rgba(250,245,243,.72);text-decoration:none;font-size:15px;font-weight:400;transition:color .2s;}
+  nav a:hover,nav a.active{color:var(--pink);}
+  .actions{display:flex;align-items:center;gap:20px;}
+  .actions .ic{background:none;border:none;cursor:pointer;display:flex;transition:transform .2s,color .2s;color:rgba(250,245,243,.6);}
+  .actions .ic.cart{color:var(--pink);}
+  .actions .ic:hover{transform:scale(1.1);}
+  .btn-enter{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--pink);border-radius:999px;padding:7px 18px;font-family:var(--ui);font-weight:600;font-size:13px;letter-spacing:.06em;color:var(--pink);background:transparent;cursor:pointer;transition:background .2s;text-decoration:none;}
+  .btn-enter:hover{background:rgba(242,134,198,.12);}
+  .cart-badge{position:relative;}
+  .cart-badge .count{position:absolute;top:-6px;right:-8px;background:var(--pink);color:#0a0708;font-size:10px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+  /* ---- Page Hero ---- */
+  .page-hero{padding:140px 0 64px;text-align:center;background:radial-gradient(50% 60% at 50% 40%, rgba(120,18,66,.28) 0%, rgba(11,11,15,0) 70%), #000;}
+  .page-hero .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;border:1px solid rgba(242,134,198,.4);border-radius:999px;padding:7px 16px;margin-bottom:22px;}
+  .page-hero .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);}
+  .page-hero h1{font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(52px,7vw,96px);color:var(--cream);line-height:1.1;text-shadow:0 4px 40px rgba(0,0,0,.5);}
+  .page-hero p{margin-top:16px;font-size:15px;color:rgba(245,245,245,.5);max-width:400px;margin-left:auto;margin-right:auto;}
+
+  /* ---- Filters ---- */
+  .filters-bar{padding:36px 0 0;display:flex;justify-content:center;}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  .filter-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:9px 22px;font-family:var(--ui);font-size:13px;font-weight:600;letter-spacing:.06em;color:rgba(245,245,245,.6);cursor:pointer;transition:all .2s;}
+  .filter-btn:hover{border-color:rgba(242,134,198,.5);color:var(--pink);}
+  .filter-btn.active{background:var(--pink);border-color:var(--pink);color:#0a0708;}
+
+  /* ---- Products Grid ---- */
+  .products-section{padding:48px 0 96px;}
+  .products-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;}
+  .card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:14px 14px 26px;backdrop-filter:blur(6px);transition:transform .3s,border-color .3s,box-shadow .3s;opacity:0;transform:translateY(26px);}
+  .card.in{opacity:1;transform:none;}
+  .card:hover{transform:translateY(-8px);border-color:rgba(242,134,198,.5);box-shadow:0 18px 50px rgba(242,134,198,.18);}
+  .card-media{position:relative;border-radius:16px;overflow:hidden;margin-bottom:20px;box-shadow:inset 0 0 24px rgba(242,134,198,.1);}
+  .card-media img{width:100%;height:240px;object-fit:cover;border-radius:16px;display:block;transition:transform .4s;}
+  .card:hover .card-media img{transform:scale(1.04);}
+  .badge-crown{position:absolute;top:12px;left:12px;z-index:2;filter:drop-shadow(0 0 6px rgba(242,134,198,.7));}
+  .ess-badge{position:absolute;top:12px;right:12px;z-index:3;background:var(--pink);color:#0a0708;font-size:10px;font-weight:700;letter-spacing:.1em;padding:4px 11px;border-radius:999px;}
+  .card h3{font-size:18px;font-weight:700;margin:0 6px 6px;letter-spacing:-.01em;}
+  .card .price{font-size:15px;font-weight:700;color:var(--pink);margin:0 6px 10px;}
+  .card p{font-size:13.5px;line-height:1.5;color:rgba(245,245,245,.55);margin:0 6px 18px;}
+  .card-actions{display:flex;gap:8px;padding:0 6px;}
+  .btn-add{flex:1;background:var(--pink);color:#0a0708;border:none;border-radius:999px;padding:11px 16px;font-family:var(--ui);font-weight:700;font-size:13px;letter-spacing:.06em;cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s;}
+  .btn-add:hover{background:#f5a8d8;transform:scale(1.02);box-shadow:0 0 20px rgba(242,134,198,.4);}
+  .btn-wish{width:40px;height:40px;border-radius:50%;border:1px solid rgba(242,134,198,.4);background:transparent;color:var(--pink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+  .btn-wish:hover{background:rgba(242,134,198,.15);border-color:var(--pink);}
+  .card[data-hidden]{display:none;}
+
+  /* ---- Footer ---- */
+  .site-footer{background:#000;padding:64px 0 32px;border-top:1px solid rgba(242,134,198,.16);}
+  .foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:44px;margin-bottom:48px;}
+  .foot-blurb{font-size:13px;color:rgba(250,245,243,.45);line-height:1.8;margin:12px 0 20px;}
+  .socials{display:flex;gap:12px;}
+  .socials a{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:var(--cream);transition:border-color .25s,color .25s,transform .25s;}
+  .socials a:hover{border-color:var(--pink);color:var(--pink);transform:translateY(-3px);}
+  .foot-col h5{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);margin:0 0 16px;font-weight:700;}
+  .foot-col ul{list-style:none;display:flex;flex-direction:column;gap:11px;}
+  .foot-col a{color:rgba(250,245,243,.5);text-decoration:none;font-size:14px;transition:color .2s;}
+  .foot-col a:hover{color:var(--pink-soft);}
+  .foot-div{height:1px;background:linear-gradient(90deg,transparent,rgba(242,134,198,.3),transparent);margin-bottom:24px;}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+  .foot-bottom p{font-size:12.5px;color:rgba(250,245,243,.32);margin:0;}
+
+  @media(max-width:1080px){nav{display:none;}.wrap{padding:0 32px;}.products-grid{grid-template-columns:repeat(2,1fr);}.foot-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.wrap{padding:0 20px;}.products-grid{grid-template-columns:1fr;}.foot-grid{grid-template-columns:1fr;}.foot-bottom{flex-direction:column;align-items:flex-start;}}
+</style>
+</head>
+<body>
+
+<header class="site-header" id="hdr">
+  <a class="brand" href="index.html">
+    <img src="assets/logo-transparent.png" alt="Tynderella" style="height:110px;width:auto;mix-blend-mode:screen;">
+  </a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="produtos.html" class="active">Produtos</a>
+    <a href="#">Coleções</a>
+    <a href="#">Sobre</a>
+  </nav>
+  <div class="actions">
+    <a href="carrinho.html" class="ic cart cart-badge" aria-label="Carrinho" style="text-decoration:none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h2l2.4 12.4a1 1 0 0 0 1 .8h8.7a1 1 0 0 0 1-.8L21 8H6"/><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/></svg>
+      <span class="count">0</span>
+    </a>
+    <a href="login.html" class="btn-enter">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+      <span>ENTRAR</span>
+    </a>
+  </div>
+</header>
+
+<!-- Page Hero -->
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span> Peças exclusivas tynderella</div>
+    <h1>Nosso Catálogo</h1>
+    <p>Cada peça é uma obra de arte — vidro soprado, design autoral e atitude de princesa.</p>
+  </div>
+</section>
+
+<!-- Filters -->
+<div class="filters-bar">
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">Todos</button>
+    <button class="filter-btn" data-filter="bong">Bongs</button>
+    <button class="filter-btn" data-filter="macarico">Maçaricos</button>
+    <button class="filter-btn" data-filter="bowl">Bowls</button>
+  </div>
+</div>
+
+<!-- Products -->
+<section class="products-section">
+  <div class="wrap">
+    <div class="products-grid" id="grid">
+
+      <article class="card" data-category="bong">
+        <div class="card-media">
+          <svg class="badge-crown" width="26" height="20" viewBox="0 0 40 30" fill="none" stroke="var(--pink)" stroke-width="2.4" stroke-linejoin="round"><path d="M3 26 L7 7 L14 18 L20 3 L26 18 L33 7 L37 26 Z"/></svg>
+          <img src="assets/produto-bong-cylinder.jpeg" alt="Bong Straight Crystal">
+        </div>
+        <h3>Bong Straight Crystal</h3>
+        <p class="price">R$ 189,90</p>
+        <p>Bong reto em vidro borosilicato com percolador tree e base disco. Filtragem superior para uma sessão suave e impecável.</p>
+        <div class="card-actions">
+          <button class="btn-add" onclick="addToCart('Bong Straight Crystal','R$ 189,90','assets/produto-bong-cylinder.jpeg')">+ Carrinho</button>
+          <button class="btn-wish" aria-label="Favoritar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        </div>
+      </article>
+
+      <article class="card" data-category="bong">
+        <span class="ess-badge">DESTAQUE</span>
+        <div class="card-media">
+          <svg class="badge-crown" width="26" height="20" viewBox="0 0 40 30" fill="none" stroke="var(--pink)" stroke-width="2.4" stroke-linejoin="round"><path d="M3 26 L7 7 L14 18 L20 3 L26 18 L33 7 L37 26 Z"/></svg>
+          <img src="assets/produto-bong-heel.jpeg" alt="Sapatinho Crystal Bong">
+        </div>
+        <h3>Sapatinho Crystal Bong</h3>
+        <p class="price">R$ 249,90</p>
+        <p>O icônico bong em formato de sapato de cristal com detalhe joia dourado — a peça mais exclusiva da coleção Tynderella.</p>
+        <div class="card-actions">
+          <button class="btn-add" onclick="addToCart('Sapatinho Crystal Bong','R$ 249,90','assets/produto-bong-heel.jpeg')">+ Carrinho</button>
+          <button class="btn-wish" aria-label="Favoritar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        </div>
+      </article>
+
+      <article class="card" data-category="bong">
+        <div class="card-media">
+          <svg class="badge-crown" width="26" height="20" viewBox="0 0 40 30" fill="none" stroke="var(--pink)" stroke-width="2.4" stroke-linejoin="round"><path d="M3 26 L7 7 L14 18 L20 3 L26 18 L33 7 L37 26 Z"/></svg>
+          <img src="assets/produto-bong-apple.jpeg" alt="Bong Maçã Encantada">
+        </div>
+        <h3>Bong Maçã Encantada</h3>
+        <p class="price">R$ 169,90</p>
+        <p>Bong artesanal em formato de maçã com corpo em vidro vermelho e folha verde soprada à mão. Arte e função em cada detalhe.</p>
+        <div class="card-actions">
+          <button class="btn-add" onclick="addToCart('Bong Maçã Encantada','R$ 169,90','assets/produto-bong-apple.jpeg')">+ Carrinho</button>
+          <button class="btn-wish" aria-label="Favoritar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        </div>
+      </article>
+
+      <article class="card" data-category="bong">
+        <div class="card-media">
+          <svg class="badge-crown" width="26" height="20" viewBox="0 0 40 30" fill="none" stroke="var(--pink)" stroke-width="2.4" stroke-linejoin="round"><path d="M3 26 L7 7 L14 18 L20 3 L26 18 L33 7 L37 26 Z"/></svg>
+          <img src="assets/produto-bong-blue.png" alt="Bong Sapphire Tower">
+        </div>
+        <h3>Bong Sapphire Tower</h3>
+        <p class="price">R$ 219,90</p>
+        <p>Bong cilíndrico em vidro borosilicato com câmara dupla e percolador tree. Design sofisticado em azul safira.</p>
+        <div class="card-actions">
+          <button class="btn-add" onclick="addToCart('Bong Sapphire Tower','R$ 219,90','assets/produto-bong-blue.png')">+ Carrinho</button>
+          <button class="btn-wish" aria-label="Favoritar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        </div>
+      </article>
+
+      <article class="card" data-category="bowl">
+        <div class="card-media">
+          <svg class="badge-crown" width="26" height="20" viewBox="0 0 40 30" fill="none" stroke="var(--pink)" stroke-width="2.4" stroke-linejoin="round"><path d="M3 26 L7 7 L14 18 L20 3 L26 18 L33 7 L37 26 Z"/></svg>
+          <img src="assets/produto-bowl-blue.png" alt="Bowl Cobra Azul">
+        </div>
+        <h3>Bowl Cobra Azul</h3>
+        <p class="price">R$ 49,90</p>
+        <p>Bowl artesanal em vidro azul cobalto com design curvo estilo cobra. Encaixe 14mm, leve e exclusivo.</p>
+        <div class="card-actions">
+          <button class="btn-add" onclick="addToCart('Bowl Cobra Azul','R$ 49,90','assets/produto-bowl-blue.png')">+ Carrinho</button>
+          <button class="btn-wish" aria-label="Favoritar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        </div>
+      </article>
+
+      <article class="card" data-category="macarico">
+        <div class="card-media">
+          <svg class="badge-crown" width="26" height="20" viewBox="0 0 40 30" fill="none" stroke="var(--pink)" stroke-width="2.4" stroke-linejoin="round"><path d="M3 26 L7 7 L14 18 L20 3 L26 18 L33 7 L37 26 Z"/></svg>
+          <img src="assets/produto-torch-slim.png" alt="Maçarico Slim Trio">
+        </div>
+        <h3>Maçarico Slim Trio</h3>
+        <p class="price">R$ 59,90</p>
+        <p>Maçarico slim de chama azul intensa disponível em dourado, preto e azul. Recarregável e premium.</p>
+        <div class="card-actions">
+          <button class="btn-add" onclick="addToCart('Maçarico Slim Trio','R$ 59,90','assets/produto-torch-slim.png')">+ Carrinho</button>
+          <button class="btn-wish" aria-label="Favoritar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        </div>
+      </article>
+
+      <article class="card" data-category="macarico">
+        <span class="ess-badge">NOVO</span>
+        <div class="card-media">
+          <svg class="badge-crown" width="26" height="20" viewBox="0 0 40 30" fill="none" stroke="var(--pink)" stroke-width="2.4" stroke-linejoin="round"><path d="M3 26 L7 7 L14 18 L20 3 L26 18 L33 7 L37 26 Z"/></svg>
+          <img src="assets/produto-torch-silver.png" alt="Maçarico Titanium Pro">
+        </div>
+        <h3>Maçarico Titanium Pro</h3>
+        <p class="price">R$ 89,90</p>
+        <p>Maçarico tático em titânio escovado com dupla chama e clip de bolso. Potência e sofisticação.</p>
+        <div class="card-actions">
+          <button class="btn-add" onclick="addToCart('Maçarico Titanium Pro','R$ 89,90','assets/produto-torch-silver.png')">+ Carrinho</button>
+          <button class="btn-wish" aria-label="Favoritar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        </div>
+      </article>
+
+      <article class="card" data-category="bowl">
+        <div class="card-media">
+          <svg class="badge-crown" width="26" height="20" viewBox="0 0 40 30" fill="none" stroke="var(--pink)" stroke-width="2.4" stroke-linejoin="round"><path d="M3 26 L7 7 L14 18 L20 3 L26 18 L33 7 L37 26 Z"/></svg>
+          <img src="assets/produto-bowl-skull.png" alt="Bowl Caveira Crystal Blue">
+        </div>
+        <h3>Bowl Caveira Crystal Blue</h3>
+        <p class="price">R$ 54,90</p>
+        <p>Bowl em vidro azul safira com escultura de caveira detalhada. Encaixe 14mm, peça colecionável.</p>
+        <div class="card-actions">
+          <button class="btn-add" onclick="addToCart('Bowl Caveira Crystal Blue','R$ 54,90','assets/produto-bowl-skull.png')">+ Carrinho</button>
+          <button class="btn-wish" aria-label="Favoritar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="index.html">
+          <span style="font-family:'Great Vibes',cursive;font-size:38px;color:var(--pink);font-weight:400;text-shadow:0 0 20px rgba(242,134,198,.35);">Tynderella</span>
+        </a>
+        <p class="foot-blurb">Smoke like a princess.<br>Acessórios premium para a rainha moderna.</p>
+        <div class="socials">
+        </div>
+      </div>
+      <div class="foot-col"><h5>Loja</h5><ul><li><a href="produtos.html">Produtos</a></li><li><a href="#">Coleções</a></li><li><a href="#">Lançamentos</a></li></ul></div>
+      <div class="foot-col"><h5>Informações</h5><ul><li><a href="#">Sobre</a></li><li><a href="#">Contato</a></li><li><a href="#">Política</a></li></ul></div>
+      <div class="foot-col"><h5>Social</h5><ul><li><a href="#">Instagram</a></li><li><a href="#">TikTok</a></li><li><a href="#">Pinterest</a></li></ul></div>
+    </div>
+    <div class="foot-div"></div>
+    <div class="foot-bottom">
+      <p>© 2026 Tynderella Store. Todos os direitos reservados.</p>
+      <p>Made with 🩷 for princesses · Maioridade +18</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* Header scroll */
+  var hdr = document.getElementById('hdr');
+  window.addEventListener('scroll', function(){ hdr.classList.toggle('scrolled', scrollY > 40); }, {passive:true});
+
+  /* Check user auth */
+  var user = JSON.parse(localStorage.getItem('ty-user')||'{}');
+  var loginBtn = document.querySelector('.btn-enter');
+  if(loginBtn) {
+    if(user.name) {
+      loginBtn.href = 'perfil.html';
+      loginBtn.querySelector('span').textContent = 'PERFIL';
+    } else {
+      loginBtn.href = 'login.html';
+    }
+  }
+
+  /* Card animations */
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:.15});
+    document.querySelectorAll('.card').forEach(function(c,i){ c.style.transitionDelay=(i*.07)+'s'; io.observe(c); });
+  } else { document.querySelectorAll('.card').forEach(function(c){ c.classList.add('in'); }); }
+
+  /* Filter */
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  var cards = document.querySelectorAll('.card');
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var f = btn.dataset.filter;
+      cards.forEach(function(c){
+        if(f === 'all' || c.dataset.category === f){ c.removeAttribute('data-hidden'); }
+        else { c.setAttribute('data-hidden', '1'); }
+      });
+    });
+  });
+
+  /* Cart */
+  var cart = JSON.parse(localStorage.getItem('ty-cart') || '[]');
+  function updateBadge(){ var badge = document.querySelector('.cart-badge .count'); if(badge) badge.textContent = cart.reduce(function(a,i){ return a+i.qty; }, 0); }
+  updateBadge();
+  window.addToCart = function(name, price, img){
+    var existing = cart.find(function(i){ return i.name === name; });
+    if(existing){ existing.qty++; } else { cart.push({name:name,price:price,img:img,qty:1}); }
+    localStorage.setItem('ty-cart', JSON.stringify(cart));
+    updateBadge();
+    var btn = event.target;
+    btn.textContent = '✓ Adicionado';
+    btn.style.background = '#EBD687';
+    setTimeout(function(){ btn.textContent = '+ Carrinho'; btn.style.background = ''; }, 1500);
+  };
+})();
+</script>
+</body>
+</html>
