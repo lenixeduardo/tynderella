@@ -1,25 +1,50 @@
-# CODING AGENTS: READ THIS FIRST
+# 👑 Tynderella Store — Smoke Like a Princess
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+Welcome to **Tynderella Store**, a luxury, modern e-commerce landing page designed with premium dark aesthetics, elegant typography, and stunning interactive animations.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+![GitHub Cover Image](assets/github-cover.png)
 
-## What you should do — IMPORTANT
+## ✨ Features
 
-**Read the chat transcripts first.** There are 2 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+- **Luxury Visual Design:** Vibrant pink and gold accents contrasted against a deep zinc-950 backdrop.
+- **Glassmorphism & Micro-animations:** Responsive sticky navigation bar with real-time backdrop blur filtering and interactive hover states.
+- **Dynamic Starfall Canvas:** Interactive HTML5 Canvas animation simulating falling stars and shooting meteors in pink and gold hues.
+- **Manifesto Scroll Reveal:** Custom word-by-word reveal effect triggered by the viewport scroll depth.
+- **Product Catalogues:** Clean, modern grids showcasing exclusive curated product cards with scroll-fade-in effect.
+- **Responsive Layout:** Pixel-perfect design optimized for mobile, tablet, and ultra-wide screens.
 
-**Read `project/Tynderella Store.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+## 🛠️ Technology Stack
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+- **HTML5 & Semantic Structure:** Built for high accessibility, modern SEO practices, and speed.
+- **Vanilla CSS3:** Bespoke styling system using native CSS variables for colors, typography, and responsive media queries. No external bloated frameworks.
+- **Modern Web Fonts:** Powered by Google Fonts (Outfit, Playfair Display, Great Vibes, Allura).
+- **Interactive JavaScript:** Custom performance-optimized viewport calculations and canvas animations (automatically adjusted for users with `prefers-reduced-motion`).
 
-## About the design files
+## 🚀 Getting Started
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+Simply open `index.html` in your favorite web browser or host the repository files directly using any static web server (such as GitHub Pages, Vercel, Netlify, or Apache).
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+### Local Server Setup (Optional)
+If you want to run the project using Node.js:
+```bash
+# Start a simple HTTP server (requires Node.js)
+npx http-server .
+```
 
-## Bundle contents
+## 📁 Repository Structure
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `tynderella` project files (HTML prototypes, assets, components)
+```
+├── assets/                  # High-quality visual assets and logos
+│   ├── logo-transparent.png
+│   ├── logo-sapatinho-transparent.png
+│   ├── heel-glass.png
+│   └── github-cover.png     # Repository banner image
+├── uploads/                 # Product and media uploads
+├── screenshots/             # Design reference screenshots
+├── index.html               # Main entrypoint
+├── README.md                # Project documentation
+└── Tynderella Store.html    # Design prototype backup
+```
+
+## 🩷 License
+Tynderella Store is created for retail fashion/accessory concepts (+18). All rights reserved.
