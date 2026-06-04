@@ -111,6 +111,19 @@ body{
   0%,100%{opacity:.3;}50%{opacity:.75;}
 }
 
+/* ── Mobile: reduce perspective tilt & item size ── */
+@media (max-width: 640px) {
+  .orbit-layer {
+    overflow:hidden;
+    transform: perspective(800px) rotateX(4deg);
+    transform-origin: center center;
+  }
+  .orbit-item {
+    width: 48px;height:48px;
+    border-radius:12px;
+  }
+}
+
 /* Fade out on click */
 body.leaving{animation:fade-out .5s ease forwards;}
 @keyframes fade-out{to{opacity:0;}}
@@ -145,17 +158,28 @@ var PRODUCTS = [
   'assets/produto-torch-slim.png',
   'assets/produto-torch-silver.png'
 ];
-var ITEMS = PRODUCTS.concat(PRODUCTS); // 16 total
-var ITEM_SIZE = 72;
+
+function getRingItems(count) {
+  var result = [];
+  for (var i = 0; i < count; i++) {
+    result.push(PRODUCTS[i % PRODUCTS.length]);
+  }
+  return result;
+}
 
 function buildRings() {
+  var isMobile = window.innerWidth < 640;
+  var ITEM_SIZE = isMobile ? 48 : 72;
+  var PER_RING = isMobile ? 6 : 8;
+
   var layer = document.getElementById('orbit-layer');
   layer.innerHTML = '';
 
   var W = window.innerWidth, H = window.innerHeight;
+  var ref = Math.min(W, H);
   // ring diameters relative to viewport
-  var rInner = Math.min(W, H) * 0.62;
-  var rOuter = Math.min(W, H) * 0.95;
+  var rInner = ref * (isMobile ? 0.72 : 0.62);
+  var rOuter = ref * (isMobile ? 0.90 : 0.95);
 
   function makeRing(items, radius, cls, angleOffset) {
     var ring = document.createElement('div');
@@ -186,8 +210,11 @@ function buildRings() {
     });
   }
 
-  makeRing(ITEMS.slice(0, 8),  rInner, 'ring-inner', 0);
-  makeRing(ITEMS.slice(8, 16), rOuter, 'ring-outer', 22.5);
+  var innerItems = getRingItems(PER_RING);
+  var outerItems = getRingItems(PER_RING);
+
+  makeRing(innerItems, rInner, 'ring-inner', 0);
+  makeRing(outerItems, rOuter, 'ring-outer', 22.5);
 }
 
 buildRings();
