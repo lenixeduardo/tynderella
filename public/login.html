@@ -60,10 +60,30 @@
   .form-footer{font-size:13px;color:rgba(245,245,245,.4);text-align:center;}
   .form-footer a{color:var(--pink);text-decoration:none;}
   .register-only{display:none;}
-  .consent-label{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(245,245,245,.6);text-transform:none;letter-spacing:0;font-weight:400;cursor:pointer;line-height:1.5;}
-  .consent-label input{margin-top:2px;accent-color:var(--pink);flex-shrink:0;}
+  .consent-label{display:flex;flex-direction:row;align-items:center;gap:10px;font-size:13px;color:rgba(245,245,245,.6);text-transform:none;letter-spacing:0;font-weight:400;cursor:pointer;line-height:1.5;}
+  .consent-label input[type="checkbox"]{flex-shrink:0;width:16px;height:16px;accent-color:var(--pink);cursor:pointer;margin:0;}
   .consent-label a{color:var(--pink);}
   @media(max-width:900px){body{flex-direction:column;}.left-panel{min-height:240px;flex:none;padding:40px 24px;}.right-panel{width:100%;padding:40px 28px;}}
+
+  /* ---- Toast System ---- */
+  .ty-toast-wrap{position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;}
+  .ty-toast{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:rgba(15,15,20,.96);border-radius:16px;max-width:340px;pointer-events:all;transform:translateX(130%);transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .4s;opacity:0;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+  .ty-toast.show{transform:translateX(0);opacity:1;}
+  .ty-toast.hide{transform:translateX(130%);opacity:0;}
+  .ty-toast-success{border:1px solid rgba(70,200,120,.3);box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 20px rgba(70,200,120,.1);}
+  .ty-toast-error{border:1px solid rgba(242,100,100,.3);box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 20px rgba(242,100,100,.1);}
+  .ty-toast-info{border:1px solid rgba(242,134,198,.3);box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 20px rgba(242,134,198,.1);}
+  .ty-toast-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;margin-top:1px;}
+  .ty-toast-success .ty-toast-icon{background:rgba(70,200,120,.2);color:#46c878;}
+  .ty-toast-error .ty-toast-icon{background:rgba(242,100,100,.2);color:#f26464;}
+  .ty-toast-info .ty-toast-icon{background:rgba(242,134,198,.2);color:#F286C6;}
+  .ty-toast-body{flex:1;}
+  .ty-toast-msg{font-family:'Outfit',system-ui,sans-serif;font-size:13px;font-weight:500;color:rgba(245,245,245,.9);line-height:1.5;}
+  .ty-toast-bar{position:absolute;bottom:0;left:0;height:2px;width:100%;transform-origin:left;}
+  .ty-toast-success .ty-toast-bar{background:rgba(70,200,120,.6);}
+  .ty-toast-error .ty-toast-bar{background:rgba(242,100,100,.6);}
+  .ty-toast-info .ty-toast-bar{background:rgba(242,134,198,.6);}
+  @keyframes ty-shrink{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 </style>
 </head>
 <body>
@@ -138,11 +158,24 @@
     </div>
 
     <div class="forgot" id="forgot-row">
-      <a href="#">Esqueci minha senha</a>
+      <a href="#" onclick="showForgotPassword();return false;">Esqueci minha senha</a>
     </div>
 
     <button class="btn-submit" type="submit" id="submit-btn">ENTRAR</button>
   </form>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgot-modal" style="display:none;margin-bottom:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;">
+    <p style="font-size:13px;color:rgba(245,245,245,.6);margin-bottom:12px;">Informe seu e-mail para receber o link de redefinição de senha.</p>
+    <div class="field" style="margin-bottom:12px;">
+      <label>E-mail</label>
+      <input type="email" id="reset-email" placeholder="seu@email.com">
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button type="button" onclick="sendPasswordReset()" style="flex:1;background:var(--pink);color:#0a0708;border:none;border-radius:999px;padding:12px;font-family:var(--ui);font-weight:700;font-size:14px;cursor:pointer;">Enviar link</button>
+      <button type="button" onclick="hideForgotPassword()" style="background:rgba(255,255,255,.06);color:rgba(245,245,245,.6);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:12px 16px;font-family:var(--ui);font-size:14px;cursor:pointer;">Cancelar</button>
+    </div>
+  </div>
 
   <div class="divider"><span>ou continue com</span></div>
   <div class="social-btns">
@@ -179,7 +212,7 @@ if (window.__SUPABASE_URL && window.__SUPABASE_ANON_KEY) {
       }
     });
     if (error) {
-      alert('Erro na autenticação com Google: ' + error.message);
+      showToast('Erro Google: ' + error.message,'error');
     }
   });
 }
@@ -213,7 +246,7 @@ async function handleSubmit(e){
   var password = document.getElementById('password').value;
 
   if (!supabaseClient) {
-    alert('Erro: Conexão com Supabase não inicializada. Verifique as configurações.');
+    showToast('Conexão com Supabase não inicializada.','error');
     return;
   }
 
@@ -228,7 +261,7 @@ async function handleSubmit(e){
     });
 
     if (error) {
-      alert(sanitizeAuthError(error.message));
+      showToast(sanitizeAuthError(error.message),'error');
       btn.textContent = 'ENTRAR';
       btn.style.opacity = '1';
     } else {
@@ -242,7 +275,7 @@ async function handleSubmit(e){
   } else {
     var confirmPass = document.getElementById('confirm').value;
     if (password !== confirmPass) {
-      alert('As senhas não coincidem. Por favor, verifique e tente novamente.');
+      showToast('As senhas não coincidem.','error');
       btn.textContent = 'CRIAR CONTA';
       btn.style.opacity = '1';
       return;
@@ -250,7 +283,7 @@ async function handleSubmit(e){
 
     var consentCheck = document.getElementById('consent-check');
     if (!consentCheck.checked) {
-      alert('Você precisa aceitar a Política de Privacidade e a LGPD para criar uma conta.');
+      showToast('Aceite os Termos de Uso para continuar.','error');
       btn.textContent = 'CRIAR CONTA';
       btn.style.opacity = '1';
       return;
@@ -272,11 +305,11 @@ async function handleSubmit(e){
     });
 
     if (error) {
-      alert(sanitizeAuthError(error.message));
+      showToast(sanitizeAuthError(error.message),'error');
       btn.textContent = 'CRIAR CONTA';
       btn.style.opacity = '1';
     } else {
-      alert('Cadastro realizado com sucesso! Verifique seu e-mail caso necessário.');
+      showToast('Cadastro realizado! Verifique seu e-mail.','success');
       var user = {
         name: (fname + ' ' + lname).trim(),
         email: email
@@ -285,6 +318,40 @@ async function handleSubmit(e){
       window.location.href = 'perfil.html';
     }
   }
+}
+
+function showForgotPassword(){
+  document.getElementById('forgot-modal').style.display='block';
+  document.getElementById('reset-email').value = document.getElementById('email').value || '';
+  document.getElementById('reset-email').focus();
+}
+function hideForgotPassword(){
+  document.getElementById('forgot-modal').style.display='none';
+}
+async function sendPasswordReset(){
+  if(!supabaseClient){ showToast('Conexão com Supabase não inicializada.','error'); return; }
+  var email = document.getElementById('reset-email').value.trim();
+  if(!email){ showToast('Informe um e-mail válido.','error'); return; }
+  var btn = document.querySelector('#forgot-modal button');
+  btn.textContent='Enviando...'; btn.style.opacity='.7';
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/login.html'
+  });
+  btn.textContent='Enviar link'; btn.style.opacity='1';
+  if(error){ showToast('Erro: ' + error.message,'error'); }
+  else { showToast('Link enviado! Verifique seu e-mail.','success'); hideForgotPassword(); }
+}
+
+function showToast(msg, type){
+  type = type || 'info';
+  var icons = {success:'✓', error:'✕', info:'i'};
+  var wrap = document.getElementById('ty-toasts');
+  var t = document.createElement('div');
+  t.className = 'ty-toast ty-toast-'+type;
+  t.innerHTML = '<div class="ty-toast-icon">'+icons[type]+'</div><div class="ty-toast-body"><div class="ty-toast-msg">'+msg+'</div></div><div class="ty-toast-bar" style="animation:ty-shrink 3.5s linear forwards"></div>';
+  wrap.appendChild(t);
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ t.classList.add('show'); }); });
+  setTimeout(function(){ t.classList.add('hide'); setTimeout(function(){ t.remove(); }, 400); }, 3500);
 }
 </script>
 <script>
@@ -357,5 +424,6 @@ async function handleSubmit(e){
   frame();
 })();
 </script>
+<div class="ty-toast-wrap" id="ty-toasts"></div>
 </body>
 </html>
