@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude-flow / agent runtime (binary/session state)
+agentdb.rvf
+agentdb.rvf.lock
+ruvector.db
+.claude/memory.db
+.claude-flow/
+.swarm/
