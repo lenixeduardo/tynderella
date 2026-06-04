@@ -156,27 +156,50 @@ var products = [
   'assets/produto-torch-silver.png'
 ];
 
-// 16 positions [top%, left%, delay(s), duration(s), rotation(deg)]
-var positions = [
-  [4,2,0,3.2,-12],[4,18,0.6,3.8,8],[4,72,1.1,3.5,-6],[4,88,0.3,4.1,14],
-  [22,1,1.4,3.7,-18],[22,93,0.8,3.3,10],[44,0,0.2,4.2,-8],[44,92,1.6,3.6,16],
-  [64,2,0.9,3.9,-14],[64,90,0.4,3.4,6],[78,6,1.2,4.0,12],[78,85,0.7,3.5,-10],
-  [88,20,1.5,3.7,8],[88,50,0.1,4.3,-16],[88,68,1.0,3.8,4],[88,82,0.5,3.2,-6]
-];
-
-// Duplicate products array for 16 items
+// Two concentric rings around center (8 inner + 8 outer)
 var items = products.concat(products);
 var container = document.getElementById('floats');
+var SIZE = 72; // item px
+
+function place() {
+  var W = window.innerWidth, H = window.innerHeight;
+  var cx = W / 2, cy = H / 2;
+  // radii: inner ~28% of shortest dim, outer ~44%
+  var rInner = Math.min(W, H) * 0.28;
+  var rOuter = Math.min(W, H) * 0.44;
+  // adjust for non-square: use separate x/y radii
+  var rxI = rInner * (W / Math.min(W,H) > 1.4 ? 1.35 : 1);
+  var ryI = rInner;
+  var rxO = rOuter * (W / Math.min(W,H) > 1.4 ? 1.4 : 1);
+  var ryO = rOuter;
+
+  var allEls = container.querySelectorAll('.float-item');
+  allEls.forEach(function(el, i) {
+    var isOuter = i >= 8;
+    var idx = isOuter ? i - 8 : i;
+    var total = 8;
+    // offset outer ring by half-step for interlacing
+    var offset = isOuter ? (Math.PI / total) : 0;
+    var angle = (2 * Math.PI * idx / total) + offset - Math.PI / 2;
+    var rx = isOuter ? rxO : rxI;
+    var ry = isOuter ? ryO : ryI;
+    var x = cx + rx * Math.cos(angle) - SIZE / 2;
+    var y = cy + ry * Math.sin(angle) - SIZE / 2;
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+  });
+}
 
 items.forEach(function(src, i) {
-  var pos = positions[i] || [50,50,0,4,0];
+  var delay = (i * 0.22).toFixed(2);
+  var dur   = (3.2 + (i % 5) * 0.3).toFixed(1);
+  var rot   = ((i % 3 - 1) * 8) + 'deg';
   var el = document.createElement('div');
   el.className = 'float-item';
   el.style.cssText = [
-    'top:'+pos[0]+'%',
-    'left:'+pos[1]+'%',
-    'animation:float-bob '+pos[3]+'s ease-in-out '+pos[2]+'s infinite',
-    '--r:'+pos[4]+'deg'
+    'position:fixed',
+    'animation:float-bob '+dur+'s ease-in-out '+delay+'s infinite',
+    '--r:'+rot
   ].join(';');
   var img = document.createElement('img');
   img.src = src;
@@ -184,6 +207,10 @@ items.forEach(function(src, i) {
   el.appendChild(img);
   container.appendChild(el);
 });
+
+// Position items in rings
+place();
+window.addEventListener('resize', place);
 
 // Click anywhere to enter store
 document.body.addEventListener('click', function() {
