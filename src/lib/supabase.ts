@@ -4,13 +4,8 @@ let _instance: SupabaseClient | null = null;
 
 function getInstance(): SupabaseClient {
   if (!_instance) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !key) {
-      throw new Error(
-        "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set"
-      );
-    }
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://zzjnbsckeottbnyfvhea.supabase.co';
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6am5ic2NrZW90dGJueWZ2aGVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTU5NjIsImV4cCI6MjA5NjA5MTk2Mn0.vkSvxopKxgIqYmYZk3g2xYqgl65PBNEE0QKdtrKjAPo';
     _instance = createClient(url, key);
   }
   return _instance;
