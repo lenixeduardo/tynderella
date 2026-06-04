@@ -43,7 +43,7 @@ export default function HeroPage() {
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
-    const handler = () => { window.location.href = '/index.html' }
+    const handler = () => { window.location.href = '/store.html' }
     el.addEventListener('click', handler)
     return () => el.removeEventListener('click', handler)
   }, [])

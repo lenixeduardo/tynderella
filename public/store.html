@@ -250,6 +250,18 @@
   .foot-bottom{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
   .foot-bottom p{font-size:12.5px;color:rgba(250,245,243,.32);margin:0;}
 
+  /* ---- Hamburger Mobile Nav ---- */
+  .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:none;background:transparent;z-index:200;}
+  .nav-hamburger span{display:block;width:22px;height:2px;background:var(--cream, #F5F5F5);border-radius:2px;transition:all .3s cubic-bezier(.16,1,.3,1);}
+  .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .nav-hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+  .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .nav-mobile-overlay{position:fixed;inset:0;background:rgba(11,11,15,.97);z-index:150;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;transform:translateX(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);pointer-events:none;}
+  .nav-mobile-overlay.open{transform:translateX(0);pointer-events:all;}
+  .nav-mobile-overlay a{font-family:'Outfit',system-ui,sans-serif;font-size:28px;font-weight:700;color:rgba(245,245,245,.7);text-decoration:none;letter-spacing:.04em;transition:color .2s;}
+  .nav-mobile-overlay a:hover{color:#F286C6;}
+  @media(max-width:768px){.nav-hamburger{display:flex;} .nav-desktop-links{display:none !important;}}
+
   /* ── Responsive ── */
   @media(prefers-reduced-motion:reduce){
     .twinkle,.marquee-track{animation:none;}
