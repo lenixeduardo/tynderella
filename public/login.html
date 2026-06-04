@@ -188,7 +188,7 @@ function switchTab(tab){
   currentTab = tab;
   document.getElementById('tab-login').classList.toggle('active', tab === 'login');
   document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-  document.querySelectorAll('.register-only').forEach(function(el){ el.style.display = tab === 'register' ? '' : 'none'; });
+  document.querySelectorAll('.register-only').forEach(function(el){ el.style.display = tab === 'register' ? (el.classList.contains('field-row') ? 'grid' : 'block') : 'none'; });
   document.getElementById('forgot-row').style.display = tab === 'login' ? 'flex' : 'none';
   document.getElementById('submit-btn').textContent = tab === 'login' ? 'ENTRAR' : 'CRIAR CONTA';
   document.getElementById('form-footer').innerHTML = tab === 'login'
