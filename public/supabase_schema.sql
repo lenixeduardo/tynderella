@@ -7,8 +7,20 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+    consented_at TIMESTAMP WITH TIME ZONE,
+    privacy_policy_version TEXT DEFAULT '1.0',
+    terms_accepted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- Migração segura: adiciona colunas LGPD se ainda não existirem (para bancos já criados)
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='consented_at') THEN
+    ALTER TABLE public.profiles ADD COLUMN consented_at TIMESTAMP WITH TIME ZONE;
+    ALTER TABLE public.profiles ADD COLUMN privacy_policy_version TEXT DEFAULT '1.0';
+    ALTER TABLE public.profiles ADD COLUMN terms_accepted BOOLEAN DEFAULT FALSE;
+  END IF;
+END $$;
 
 -- 3. Tabela de Produtos
 CREATE TABLE IF NOT EXISTS public.products (
@@ -47,8 +59,20 @@ ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 
 -- 7. Políticas de Acesso
--- Perfis: Usuário lê o próprio perfil; Admin lê todos; qualquer usuário autenticado pode criar.
-CREATE POLICY "Allow public read for profiles" ON public.profiles FOR SELECT USING (true);
+
+-- Função auxiliar (SECURITY DEFINER) para verificar se o usuário atual é admin.
+-- O SECURITY DEFINER evita recursão infinita ao consultar profiles dentro de uma policy de profiles.
+CREATE OR REPLACE FUNCTION public.is_current_user_admin()
+RETURNS BOOLEAN LANGUAGE SQL SECURITY DEFINER STABLE AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'
+  );
+$$;
+
+-- Perfis: usuário lê/edita apenas o próprio; admin lê todos.
+DROP POLICY IF EXISTS "Allow public read for profiles" ON public.profiles;
+CREATE POLICY "Allow users to read own profile" ON public.profiles
+  FOR SELECT USING (auth.uid() = id OR public.is_current_user_admin());
 CREATE POLICY "Allow users to update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Allow system profile creation" ON public.profiles FOR INSERT WITH CHECK (true);
 
@@ -84,16 +108,38 @@ CREATE POLICY "Allow order items insertions" ON public.order_items FOR INSERT WI
     )
 );
 
+-- Tabela de Audit Logs (LGPD — rastreio de acesso e modificações em dados pessoais)
+CREATE TABLE IF NOT EXISTS public.audit_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    action TEXT NOT NULL,
+    table_name TEXT,
+    record_id UUID,
+    ip_address TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admin read audit logs" ON public.audit_logs
+  FOR SELECT USING (public.is_current_user_admin());
+
 -- 8. Trigger para criar perfil automaticamente no SignUp
+-- Captura dados de consentimento LGPD passados via user_metadata no signup.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, name, email, role)
+  INSERT INTO public.profiles (id, name, email, role, consented_at, privacy_policy_version, terms_accepted)
   VALUES (
     new.id,
     COALESCE(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', 'Princesa'),
     new.email,
-    'user'
+    'user',
+    CASE
+      WHEN (new.raw_user_meta_data->>'terms_accepted')::boolean = true
+      THEN (new.raw_user_meta_data->>'consented_at')::timestamp with time zone
+      ELSE NULL
+    END,
+    COALESCE(new.raw_user_meta_data->>'privacy_policy_version', '1.0'),
+    COALESCE((new.raw_user_meta_data->>'terms_accepted')::boolean, false)
   );
   RETURN NEW;
 END;

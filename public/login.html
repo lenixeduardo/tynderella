@@ -58,8 +58,10 @@
   .btn-social:hover{border-color:rgba(242,134,198,.4);color:var(--pink);}
   .form-footer{font-size:13px;color:rgba(245,245,245,.4);text-align:center;}
   .form-footer a{color:var(--pink);text-decoration:none;}
-  /* register fields hidden by default */
   .register-only{display:none;}
+  .consent-label{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(245,245,245,.6);text-transform:none;letter-spacing:0;font-weight:400;cursor:pointer;line-height:1.5;}
+  .consent-label input{margin-top:2px;accent-color:var(--pink);flex-shrink:0;}
+  .consent-label a{color:var(--pink);}
   @media(max-width:900px){body{flex-direction:column;}.left-panel{min-height:240px;flex:none;padding:40px 24px;}.right-panel{width:100%;padding:40px 28px;}}
 </style>
 </head>
@@ -127,6 +129,13 @@
       <input type="password" placeholder="••••••••" id="confirm">
     </div>
 
+    <div class="field register-only" id="consent-row">
+      <label class="consent-label">
+        <input type="checkbox" id="consent-check">
+        <span>Concordo com o tratamento dos meus dados pessoais conforme a <a href="#">Política de Privacidade</a> e a LGPD (Lei 13.709/2018).</span>
+      </label>
+    </div>
+
     <div class="forgot" id="forgot-row">
       <a href="#">Esqueci minha senha</a>
     </div>
@@ -188,25 +197,24 @@ function switchTab(tab){
     : 'Já tem conta? <a href="#" onclick="switchTab(\'login\');return false;">Entrar</a>';
 }
 
+function sanitizeAuthError(msg) {
+  if (!msg) return 'Erro desconhecido. Tente novamente.';
+  if (msg.toLowerCase().includes('invalid login credentials') || msg.toLowerCase().includes('invalid email or password')) return 'Email ou senha incorretos.';
+  if (msg.toLowerCase().includes('email not confirmed')) return 'Confirme seu e-mail antes de entrar.';
+  if (msg.toLowerCase().includes('too many requests')) return 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+  if (msg.toLowerCase().includes('user already registered')) return 'Este e-mail já está cadastrado. Tente fazer login.';
+  if (msg.toLowerCase().includes('password should be')) return 'A senha deve ter pelo menos 6 caracteres.';
+  return 'Erro de autenticação. Tente novamente.';
+}
+
 async function handleSubmit(e){
   e.preventDefault();
 
-  var email = document.getElementById('email').value;
+  var email = document.getElementById('email').value.trim();
   var password = document.getElementById('password').value;
 
-  // Bypass para teste local do sistema
-  if (currentTab === 'login' && email === 'admin@admin.com' && password === 'admin') {
-    var user = {
-      name: 'Admin Teste',
-      email: 'admin@admin.com'
-    };
-    localStorage.setItem('ty-user', JSON.stringify(user));
-    window.location.href = 'perfil.html';
-    return;
-  }
-
   if (!supabaseClient) {
-    alert('Erro: Conexão com Supabase não inicializada.');
+    alert('Erro: Conexão com Supabase não inicializada. Verifique as configurações.');
     return;
   }
 
@@ -221,7 +229,7 @@ async function handleSubmit(e){
     });
 
     if (error) {
-      alert('Erro no Login: ' + error.message);
+      alert(sanitizeAuthError(error.message));
       btn.textContent = 'ENTRAR';
       btn.style.opacity = '1';
     } else {
@@ -233,26 +241,37 @@ async function handleSubmit(e){
       window.location.href = 'perfil.html';
     }
   } else {
-    var fname = document.getElementById('fname').value || 'Princesa';
-    var lname = document.getElementById('lname').value || '';
+    var consentCheck = document.getElementById('consent-check');
+    if (!consentCheck.checked) {
+      alert('Você precisa aceitar a Política de Privacidade e a LGPD para criar uma conta.');
+      btn.textContent = 'CRIAR CONTA';
+      btn.style.opacity = '1';
+      return;
+    }
+
+    var fname = document.getElementById('fname').value.trim() || 'Princesa';
+    var lname = document.getElementById('lname').value.trim() || '';
     const { data, error } = await supabaseClient.auth.signUp({
       email: email,
       password: password,
       options: {
         data: {
-          full_name: fname + ' ' + lname
+          full_name: (fname + ' ' + lname).trim(),
+          terms_accepted: true,
+          consented_at: new Date().toISOString(),
+          privacy_policy_version: '1.0'
         }
       }
     });
 
     if (error) {
-      alert('Erro no Cadastro: ' + error.message);
+      alert(sanitizeAuthError(error.message));
       btn.textContent = 'CRIAR CONTA';
       btn.style.opacity = '1';
     } else {
       alert('Cadastro realizado com sucesso! Verifique seu e-mail caso necessário.');
       var user = {
-        name: fname + ' ' + lname,
+        name: (fname + ' ' + lname).trim(),
         email: email
       };
       localStorage.setItem('ty-user', JSON.stringify(user));

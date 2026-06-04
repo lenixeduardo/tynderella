@@ -285,20 +285,19 @@ var products = [];
 var editId = null;
 var supabaseClient = null;
 
+function escHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // Initialize Supabase Client
 fetch('/api/config')
   .then(function(res) { return res.json(); })
   .then(async function(config) {
-    // Bypass para teste local do sistema
-    var localUser = JSON.parse(localStorage.getItem('ty-user') || '{}');
-    if (localUser.email === 'admin@admin.com') {
-      if (config.supabaseUrl && config.supabaseAnonKey) {
-        supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
-      }
-      loadProducts();
-      return;
-    }
-
     if (config.supabaseUrl && config.supabaseAnonKey) {
       supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
       
@@ -361,14 +360,14 @@ function renderTable(data){
     var statusLabel = p.status === 'ativo' ? 'Ativo' : p.status === 'destaque' ? 'Destaque' : 'Inativo';
     var catLabel = {bong:'Bong',macarico:'Maçarico',bowl:'Bowl',acessorio:'Acessório'}[p.cat]||p.cat;
     return '<tr>'+
-      '<td><div class="prod-cell"><img class="prod-thumb" src="'+p.img+'" alt="'+p.name+'"><div><div class="prod-name">'+p.name+'</div><div class="prod-cat" style="font-size: 10px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">'+p.id+'</div></div></div></td>'+
-      '<td>'+catLabel+'</td>'+
-      '<td class="price-val">'+p.price+'</td>'+
-      '<td>'+p.stock+' un.</td>'+
-      '<td><span class="badge '+statusClass+'">'+statusLabel+'</span></td>'+
+      '<td><div class="prod-cell"><img class="prod-thumb" src="'+escHtml(p.img)+'" alt="'+escHtml(p.name)+'"><div><div class="prod-name">'+escHtml(p.name)+'</div><div class="prod-cat" style="font-size: 10px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">'+escHtml(p.id)+'</div></div></div></td>'+
+      '<td>'+escHtml(catLabel)+'</td>'+
+      '<td class="price-val">'+escHtml(p.price)+'</td>'+
+      '<td>'+escHtml(p.stock)+' un.</td>'+
+      '<td><span class="badge '+escHtml(statusClass)+'">'+escHtml(statusLabel)+'</span></td>'+
       '<td><div class="row-actions">'+
-        `<button class="btn-action" onclick="editProduct('${p.id}')">Editar</button>`+
-        `<button class="btn-action danger" onclick="deleteProduct('${p.id}')">Excluir</button>`+
+        '<button class="btn-action" onclick="editProduct(\''+escHtml(p.id)+'\')">Editar</button>'+
+        '<button class="btn-action danger" onclick="deleteProduct(\''+escHtml(p.id)+'\')">Excluir</button>'+
       '</div></td>'+
     '</tr>';
   }).join('');
