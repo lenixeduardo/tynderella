@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Entrar — Tynderella Store</title>
 <link rel="icon" type="image/png" href="assets/logo-sapatinho-transparent.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👠</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -80,7 +81,7 @@
     <svg class="star" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L13.5 10.5 L22 12 L13.5 13.5 L12 22 L10.5 13.5 L2 12 L10.5 10.5 Z"/></svg>
   </div>
   <div class="content">
-    <img class="logo" src="assets/logo-sapatinho-black.png" alt="Tynderella" style="width:440px;max-width:100%;height:auto;margin-bottom:24px;filter:drop-shadow(0 0 30px rgba(242,134,198,.65)); border-radius: 20px;">
+    <img class="logo" src="assets/logo-sapatinho-transparent.png" alt="Tynderella" style="width:440px;max-width:100%;height:auto;margin-bottom:24px;filter:drop-shadow(0 0 40px rgba(242,134,198,.9)) saturate(1.8) brightness(1.15) drop-shadow(0 0 4px rgba(242,134,198,1));">
     <h2>Smoke like a princess</h2>
     <p>Bem-vindo de volta, realeza. Seu próximo feitiço te espera.</p>
   </div>
@@ -132,7 +133,7 @@
     <div class="field register-only" id="consent-row">
       <label class="consent-label">
         <input type="checkbox" id="consent-check">
-        <span>Concordo com o tratamento dos meus dados pessoais conforme a <a href="#">Política de Privacidade</a> e a LGPD (Lei 13.709/2018).</span>
+        <span>Li e aceito os <a href="#">Termos de Uso</a> e concordo com o tratamento dos meus dados pessoais conforme a <a href="#">Política de Privacidade</a> e a LGPD (Lei 13.709/2018).</span>
       </label>
     </div>
 
@@ -239,6 +240,14 @@ async function handleSubmit(e){
       window.location.href = 'perfil.html';
     }
   } else {
+    var confirmPass = document.getElementById('confirm').value;
+    if (password !== confirmPass) {
+      alert('As senhas não coincidem. Por favor, verifique e tente novamente.');
+      btn.textContent = 'CRIAR CONTA';
+      btn.style.opacity = '1';
+      return;
+    }
+
     var consentCheck = document.getElementById('consent-check');
     if (!consentCheck.checked) {
       alert('Você precisa aceitar a Política de Privacidade e a LGPD para criar uma conta.');
