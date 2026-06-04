@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Read(//c/Users/uzinh/.claude/**)"
+      "Read(//c/Users/uzinh/.claude/**)",
+      "mcp__6ae21a11-dbc6-403f-9bfd-8a8e11661a10__apply_migration",
+      "mcp__6ae21a11-dbc6-403f-9bfd-8a8e11661a10__list_tables"
     ]
   }
 }
