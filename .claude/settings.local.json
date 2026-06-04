@@ -4,7 +4,10 @@
       "Bash(npm run *)",
       "Read(//c/Users/uzinh/.claude/**)",
       "mcp__6ae21a11-dbc6-403f-9bfd-8a8e11661a10__apply_migration",
-      "mcp__6ae21a11-dbc6-403f-9bfd-8a8e11661a10__list_tables"
+      "mcp__6ae21a11-dbc6-403f-9bfd-8a8e11661a10__list_tables",
+      "mcp__39bc4abc-60e7-4d91-86ea-0a936cba1e30__get_runtime_logs",
+      "mcp__39bc4abc-60e7-4d91-86ea-0a936cba1e30__web_fetch_vercel_url",
+      "mcp__39bc4abc-60e7-4d91-86ea-0a936cba1e30__get_deployment"
     ]
   }
 }
