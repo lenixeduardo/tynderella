@@ -1,0 +1,305 @@
+{
+  "brand": {
+    "name": "Tynderella",
+    "colors": {
+      "bg": "#09090b",
+      "bgCard": "#18181b",
+      "accent": "#f43f5e",
+      "accentLight": "rgba(244,63,94,0.12)",
+      "accentBorder": "rgba(244,63,94,0.3)",
+      "textPrimary": "#fafafa",
+      "textSecondary": "#a1a1aa",
+      "textMuted": "#71717a",
+      "border": "rgba(255,255,255,0.06)",
+      "borderHover": "rgba(255,255,255,0.12)",
+      "glass": "rgba(24,24,27,0.8)"
+    }
+  },
+  "pages": [
+    {
+      "id": "pecas-adicionais",
+      "pageNumber": 22,
+      "title": "PEÇAS ADICIONAIS",
+      "subtitle": "Percolator e Difusores",
+      "sections": [
+        {
+          "title": "ALGUNS TIPOS DE PERCOLATORS E DIFUSORES",
+          "layout": "grid-4x3",
+          "items": [
+            {
+              "name": "Dome",
+              "row": 1,
+              "svgType": "dome",
+              "description": "Câmara em forma de domo para difusão da fumaça"
+            },
+            {
+              "name": "Arms ou Tree",
+              "row": 1,
+              "svgType": "tree",
+              "description": "Braços em árvore para maior superfície de contato"
+            },
+            {
+              "name": "Sprinkler",
+              "row": 1,
+              "svgType": "sprinkler",
+              "description": "Braços em V invertido dispersando uniformemente"
+            },
+            {
+              "name": "Reti Perc",
+              "row": 1,
+              "svgType": "reti",
+              "description": "Difusor de tubo reto com aeração lateral"
+            },
+            {
+              "name": "HoneyComb",
+              "row": 2,
+              "svgType": "honeycomb",
+              "description": "Disco perfurado em padrão colmeia"
+            },
+            {
+              "name": "Cyclone ou Spin",
+              "row": 2,
+              "svgType": "cyclone",
+              "description": "Câmara que gera rotação ciclônica da fumaça"
+            },
+            {
+              "name": "Frit ou Cracked",
+              "row": 2,
+              "svgType": "frit",
+              "description": "Vidro poroso granulado para máxima difusão"
+            },
+            {
+              "name": "Cheese ou Swiss",
+              "row": 2,
+              "svgType": "swiss",
+              "description": "Esferas com furos múltiplos em arranjo compacto"
+            },
+            {
+              "name": "Shower ou Matrix",
+              "row": 3,
+              "svgType": "shower",
+              "description": "Cilindro com múltiplos furos em padrão matricial"
+            },
+            {
+              "name": "Inline",
+              "row": 3,
+              "svgType": "inline",
+              "description": "Tubo horizontal com saídas distribuídas"
+            },
+            {
+              "name": "Spiral",
+              "row": 3,
+              "svgType": "spiral",
+              "description": "Tubo em espiral para resfriamento máximo"
+            },
+            {
+              "name": "Incycler ou Recicle",
+              "row": 3,
+              "svgType": "incycler",
+              "description": "Sistema fechado de reciclagem contínua"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nail-domeless",
+      "pageNumber": 28,
+      "title": "NAIL E DOMELESS",
+      "subtitle": "Fornilho do cachimbo para o uso de óleo. As peças são aquecidas a ponto de vaporizar o óleo.",
+      "sections": [
+        {
+          "title": "NAIL E DOMEBOWL",
+          "note": "Necessário utilizar o DomeBowl junto ao Nail.",
+          "layout": "grid-3",
+          "items": [
+            {
+              "name": "Nail de Vidro ou Quartzo",
+              "svgType": "nail-glass",
+              "description": "Modelo padrão de Nail para Conexões Macho 10, 14.5 ou 18.8"
+            },
+            {
+              "name": "Nail Ajustável",
+              "svgType": "nail-adjustable",
+              "description": "Nail de Titânio ajustável para Conexões Macho 10, 14.5 e 18.8"
+            },
+            {
+              "name": "DomeBowl",
+              "svgType": "domebowl",
+              "description": "Doma de contenção de Fumaça conectado ao redor do Nail. Evita o desperdício do vapor."
+            }
+          ]
+        },
+        {
+          "title": "DOMELESS",
+          "note": "Junta a função de Nail com o DomeBowl. As peças podem ser de Cerâmica, Titânio, Quartzo ou Vidro com conexões Macho ou Fêmea nas medidas: 10, 14.5 e 18.8",
+          "layout": "grid-mixed",
+          "items": [
+            {
+              "name": "Domeless Furo Central",
+              "svgType": "domeless-center",
+              "description": null
+            },
+            {
+              "name": "Domeless Braço Lateral",
+              "svgType": "domeless-side",
+              "description": null
+            },
+            {
+              "name": "Domeless Furinhos",
+              "svgType": "domeless-holes",
+              "description": null
+            },
+            {
+              "name": "Domeless Copinho",
+              "svgType": "domeless-cup",
+              "description": null
+            },
+            {
+              "name": "Adaptador",
+              "svgType": "adapter",
+              "description": "Sugerimos em alguns casos utilizar um adaptador entre o Bong e o Domeless para evitar a quebra do Bong devido a alta temperatura do Domeless que causa dilatação das peças"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bowl-downstem",
+      "pageNumber": 19,
+      "title": "BOWL E DOWNSTEM",
+      "subtitle": "Tipos mais Comuns",
+      "sections": [
+        {
+          "title": "Bowl",
+          "note": "Fornilho do cachimbo onde se coloca a fumaça para ser queimado.",
+          "layout": "grid-2",
+          "items": [
+            {
+              "name": "Bowl Cumbuca",
+              "svgType": "bowl-round",
+              "description": null
+            },
+            {
+              "name": "Bowl Cônico",
+              "svgType": "bowl-conical",
+              "description": null
+            },
+            {
+              "name": "Bowl Reta",
+              "svgType": "bowl-straight",
+              "description": "Com Puxador"
+            },
+            {
+              "name": "Bowl com Bubbler",
+              "svgType": "bowl-bubbler",
+              "description": null
+            }
+          ]
+        },
+        {
+          "title": "Downstem",
+          "note": "É o tubo de submersão da fumaça. Conecta o Bowl com a base.",
+          "layout": "grid-2",
+          "items": [
+            {
+              "name": "Bowl com DownStem",
+              "svgType": "bowl-downstem-short",
+              "description": null
+            },
+            {
+              "name": "DownStem",
+              "svgType": "downstem",
+              "description": null
+            },
+            {
+              "name": "Bowl com DownStem",
+              "svgType": "bowl-downstem-long",
+              "description": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conexoes",
+      "pageNumber": 18,
+      "title": "CONEXÕES",
+      "subtitle": null,
+      "sections": [
+        {
+          "title": "Conexões de vidro",
+          "note": "Tipos de Conexões — Conexões Macho e Fêmea. Conexões Macho encaixam em Conexões Fêmea e vice-versa.",
+          "layout": "size-grid",
+          "subsections": [
+            {
+              "label": "Macho",
+              "sizes": ["10", "14.5", "18.8"],
+              "svgType": "joint-male"
+            },
+            {
+              "label": "Fêmea",
+              "sizes": ["10", "14.5", "18.8"],
+              "svgType": "joint-female"
+            }
+          ]
+        },
+        {
+          "title": "Conexões de borracha",
+          "layout": "size-grid",
+          "subsections": [
+            {
+              "label": "Anel de Borracha",
+              "sizes": ["6mm", "10mm", "12mm"],
+              "svgType": "rubber-ring"
+            }
+          ]
+        },
+        {
+          "title": "Conector de Adaptação",
+          "note": "Existem diversas formas de Conectores. Eles Conectam e adaptam peças distintas do Bong. Também podem ser usados para:",
+          "bullets": [
+            "Converter uma Conexão Macho em Fêmea ou vice-versa",
+            "Converter uma conexão 18.8 para 14.5 ou vice-versa",
+            "Adaptar um ângulo Reto em Inclinado ou vice-versa",
+            "Distanciar uma peça de outra para evitar quebras por aquecimento ou simplesmente para adaptação"
+          ],
+          "layout": "grid-4",
+          "items": [
+            { "name": "Macho", "svgType": "adapter-male-straight" },
+            { "name": "Macho", "svgType": "adapter-male-angled" },
+            { "name": "Fêmea", "svgType": "adapter-female-straight" },
+            { "name": "Fêmea", "svgType": "adapter-female-angled" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "customizando",
+      "pageNumber": 17,
+      "title": "CUSTOMIZANDO",
+      "subtitle": null,
+      "sections": [
+        {
+          "title": "Acrescentando ou adaptando peças no seu Bong",
+          "note": "Utilizando as Conexões é possível acrescentar peças que aumentem a performance do seu Bong, como um Percolator. Além disso, é possível adaptar peças, como Bowl ou Domeless, para alterar a função de um Bong para um OilBong, e Vice-versa.",
+          "layout": "exploded-diagram",
+          "annotations": [
+            {
+              "label": "Conexão do Percolator para o DownStem",
+              "position": "bottom-left"
+            },
+            {
+              "label": "Conexão do Percolator para o Bowl",
+              "position": "top-right"
+            }
+          ],
+          "callout": {
+            "label": "Percolator",
+            "note": "Acrescido para aumentar a filtragem e resfriamento da fumaça."
+          }
+        }
+      ]
+    }
+  ]
+}
